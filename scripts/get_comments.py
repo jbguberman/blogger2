@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
             print("{} comments grabbed".format(grabbedComments))
 
-            post['replies'].update({'comments': comments['items']})
+            post['replies'].update({'comments': comments})
 
         with open('../data/completeData.json', 'w'):
             json.dump(blogData)
