@@ -70,7 +70,7 @@ if __name__ == '__main__':
                         if newComments.status_code == 400:
                             print(e)
                             sys.exit(1)
-                        elif newComments.status_cod == 403:
+                        elif newComments.status_code == 403:
                             print("Ratelimit exceeded, sleeping for one day")
                             sleep(60 * 60 * 24)
 
