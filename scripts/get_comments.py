@@ -78,6 +78,7 @@ if __name__ == '__main__':
                                 if grabbedComments == 0:
                                     newComments = getComments(settings,
                                                               blogID, postID, '')
+                                    newComments.raise_for_status()
 
                                 else:
                                     lastPost = comments[-1]
@@ -104,17 +105,20 @@ if __name__ == '__main__':
 
                                         newComments = getComments(settings,
                                                                   blogID, postID, '')
+                    try:
+                        data = newComments.json()
+                        tmpComments = data['items']
 
-                    data = newComments.json()
-                    tmpComments = data['items']
-
-                    if grabbedComments == 0:
-                        comments = tmpComments
-                        grabbedComments += len(tmpComments)
-                    else:
-                        for comment in tmpComments:
-                            comments.append(comment)
-                        grabbedComments += len(tmpComments)
+                        if grabbedComments == 0:
+                            comments = tmpComments
+                            grabbedComments += len(tmpComments)
+                        else:
+                            for comment in tmpComments:
+                                comments.append(comment)
+                            grabbedComments += len(tmpComments)
+                    except KeyError as e:
+                        print(e)
+                        continue
 
                 print("{} comments grabbed".format(grabbedComments))
 
