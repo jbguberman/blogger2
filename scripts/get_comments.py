@@ -124,5 +124,8 @@ if __name__ == '__main__':
 
                 post['replies'].update({'comments': comments})
 
+            else:
+                post['replies'].update({'comments': 'null'})
+
         with open('../data/completeData.json', 'w'):
             json.dump(blogData)
