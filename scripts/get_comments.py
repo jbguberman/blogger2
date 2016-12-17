@@ -78,6 +78,14 @@ if __name__ == '__main__':
                                 newComments = getComments(settings,
                                                           blogID, postID, '')
 
+                            else:
+                                lastPost = comments[-1]
+                                timestamp = lastPost['published']
+
+                                newComments = getComments(settings,
+                                                          blogID, postID, '')
+                                newComments.raise_for_status()
+
                     data = newComments.json()
                     tmpComments = data['items']
 
