@@ -6,17 +6,17 @@ import sys
 import get_posts
 
 
-def getComments(settings, blogID, postID, timestamp, jumper):
+def getComments(settings, keys, blogID, postID, timestamp, jumper):
 
-    api_key = settings['API_KEY']
+    key = keys[jumper]
 
     if timestamp:
         payload = {'maxResults': settings['MAX_POSTS'],
-                   'key': api_key[jumper],
+                   'key': key,
                    'endDate': timestamp}
     else:
         payload = {'maxResults': settings['MAX_POSTS'],
-                   'key': api_key[jumper]}
+                   'key': key}
 
     comments = requests.get('https://www.googleapis.com/blogger/v3/blogs/{}/posts/{}/comments?'
                             .format(blogID, postID), params=payload)
@@ -24,7 +24,26 @@ def getComments(settings, blogID, postID, timestamp, jumper):
     return(comments)
 
 
+def getBlogID(settings, keys, jumper):
+
+    key = keys[jumper]
+
+    r = requests.get('https://www.googleapis.com/blogger/'
+                     'v3/blogs/byurl?url={}%2F&key={}'
+                     .format(settings['BLOG_URL'], key))
+
+    blog_Data = r.json()
+    blogID = blog_Data['id']
+    postsInBlog = blog_Data['posts']['totalItems']
+
+    return(blogID, postsInBlog)
+
+
 if __name__ == '__main__':
+
+    keys = ['AIzaSyA46oExWtnWuzXamBhyW9yJlMtCXz0fV5Q',
+            'AIzaSyDSqlS61HeyhTm93k_ypjSPgHjHnIoybzo',
+            'AIzaSyBeV_UsBAmZkCXsP5GpWNqqmP9X9Zfx1SA']
 
     jumper = 0
 
@@ -33,7 +52,7 @@ if __name__ == '__main__':
 
     settings = get_posts.setup(config)
 
-    blogID, postsInBlog = get_posts.getBlogID(settings)
+    blogID, postsInBlog = getBlogID(settings, keys, jumper)
 
     totalCalls = 0
 
@@ -70,7 +89,7 @@ if __name__ == '__main__':
                     try:
                         if grabbedComments == 0:
                             totalCalls += 1
-                            newComments = getComments(settings,
+                            newComments = getComments(settings, keys,
                                                       blogID, postID, '', jumper)
                             newComments.raise_for_status()
 
@@ -79,7 +98,7 @@ if __name__ == '__main__':
                             lastPost = comments[-1]
                             timestamp = lastPost['published']
 
-                            newComments = getComments(settings,
+                            newComments = getComments(settings, keys,
                                                       blogID, postID, timestamp, jumper)
                             newComments.raise_for_status()
 
