@@ -71,20 +71,37 @@ if __name__ == '__main__':
                             print(e)
                             sys.exit(1)
                         elif newComments.status_code == 403:
-                            print("Ratelimit exceeded, sleeping for one day")
-                            sleep(60 * 60 * 24)
 
-                            if grabbedComments == 0:
-                                newComments = getComments(settings,
-                                                          blogID, postID, '')
+                            try:
+                                print('Ratelimit exceeded, sleeping for 30 seconds')
+                                sleep(30)
+                                if grabbedComments == 0:
+                                    newComments = getComments(settings,
+                                                              blogID, postID, '')
 
-                            else:
-                                lastPost = comments[-1]
-                                timestamp = lastPost['published']
+                                else:
+                                    lastPost = comments[-1]
+                                    timestamp = lastPost['published']
 
-                                newComments = getComments(settings,
-                                                          blogID, postID, '')
-                                newComments.raise_for_status()
+                                    newComments = getComments(settings,
+                                                              blogID, postID, '')
+                                    newComments.raise_for_status()
+
+                            except newComments.status_code == 403:
+
+                                print("Ratelimit exceeded, sleeping for one day")
+                                sleep(60 * 60 * 24)
+
+                                if grabbedComments == 0:
+                                    newComments = getComments(settings,
+                                                              blogID, postID, '')
+
+                                else:
+                                    lastPost = comments[-1]
+                                    timestamp = lastPost['published']
+
+                                    newComments = getComments(settings,
+                                                              blogID, postID, '')
 
                     data = newComments.json()
                     tmpComments = data['items']
