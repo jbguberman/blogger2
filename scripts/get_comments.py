@@ -87,21 +87,23 @@ if __name__ == '__main__':
                                                               blogID, postID, '')
                                     newComments.raise_for_status()
 
-                            except newComments.status_code == 403:
+                            except newComments.status_code as e:
 
-                                print("Ratelimit exceeded, sleeping for one day")
-                                sleep(60 * 60 * 24)
+                                if newComments.status_code == 403:
 
-                                if grabbedComments == 0:
-                                    newComments = getComments(settings,
-                                                              blogID, postID, '')
+                                    print("Ratelimit exceeded, sleeping for one day")
+                                    sleep(60 * 60 * 24)
 
-                                else:
-                                    lastPost = comments[-1]
-                                    timestamp = lastPost['published']
+                                    if grabbedComments == 0:
+                                        newComments = getComments(settings,
+                                                                  blogID, postID, '')
 
-                                    newComments = getComments(settings,
-                                                              blogID, postID, '')
+                                    else:
+                                        lastPost = comments[-1]
+                                        timestamp = lastPost['published']
+
+                                        newComments = getComments(settings,
+                                                                  blogID, postID, '')
 
                     data = newComments.json()
                     tmpComments = data['items']
